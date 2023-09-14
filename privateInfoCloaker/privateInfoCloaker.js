@@ -18,25 +18,46 @@
   const cloakInterval = 50;
   const overlayInterval = 2500;
 
-  const appendToHead = (element) => {
-    let checkHeadInterval = setInterval(() => {
-      if (document.head) {
-        document.head.appendChild(element);
-        clearInterval(checkHeadInterval);
-      }
-    }, 1);
+  const appendTo = (target, element) => {
+    const _append = () => {
+      target.appendChild(element);
+    };
+
+    if (target) {
+      _append();
+    } else {
+      const interval = setInterval(() => {
+        if (target) {
+          _append();
+          clearInterval(interval);
+        }
+      }, 0.1);
+    }
   };
 
-  const appendToBody = (element) => {
-    let checkHeadInterval = setInterval(() => {
-      if (document.body) {
-        document.body.appendChild(element);
-        clearInterval(checkHeadInterval);
+  const addPrecloak = () => {
+    let preCloakStyle = document.createElement("style");
+    preCloakStyle.type = "text/css";
+    preCloakStyle.setAttribute("data-identity", "pre-cloak");
+    preCloakStyle.innerHTML = `
+      * {
+          visibility: hidden !important;
       }
-    }, 1);
+
+      #cloakOverlay, #cloakOverlay * {
+          visibility: visible !important;
+      }
+  `;
+
+    appendTo(document.head, preCloakStyle);
   };
 
-  const addStyle = () => {
+  const removePrecloak = () => {
+    let preCloak = document.querySelector('style[data-identity="pre-cloak"]');
+    if (preCloak) preCloak.remove();
+  };
+
+  const addOverlayStyle = () => {
     let style = document.createElement("style");
     style.type = "text/css";
     style.innerHTML = `
@@ -83,27 +104,13 @@
         margin-right: 15px;
     }
 `;
-    appendToHead(style);
-  };
 
-  const addPrecloak = () => {
-    let preCloakStyle = document.createElement("style");
-    preCloakStyle.type = "text/css";
-    preCloakStyle.setAttribute("data-identity", "pre-cloak");
-    preCloakStyle.innerHTML = `
-      * {
-          visibility: hidden !important;
-      }
-
-      #cloakOverlay, #cloakOverlay * {
-          visibility: visible !important;
-      }
-  `;
-
-    appendToHead(preCloakStyle);
+    appendTo(document.head, style);
   };
 
   const addOverlay = () => {
+    addOverlayStyle();
+
     let overlay = document.createElement("div");
     overlay.setAttribute("id", "cloakOverlay");
 
@@ -114,15 +121,17 @@
     let textNode = document.createTextNode("CLOAKING IN PROGRESS...");
     overlay.appendChild(textNode);
 
-    appendToBody(overlay);
+    appendTo(document.body, overlay);
   };
 
   const removeOverlay = () => {
     let overlay = document.getElementById("cloakOverlay");
     if (overlay) overlay.remove();
+  };
 
-    let preCloak = document.querySelector('style[data-identity="pre-cloak"]');
-    if (preCloak) preCloak.remove();
+  const showCloakedPage = () => {
+    removePrecloak();
+    removeOverlay();
   };
 
   const cloakPrivateInfo = (node) => {
@@ -193,7 +202,7 @@
     addOverlay();
     sweepAndCloak();
     setInterval(sweepAndCloak, cloakInterval);
-    setTimeout(removeOverlay, overlayInterval);
+    setTimeout(showCloakedPage, overlayInterval);
   };
 
   if (document.body) {
