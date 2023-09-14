@@ -19,20 +19,25 @@
   const overlayInterval = 2500;
 
   const appendTo = (target, element) => {
+    console.debug(`Appending element to target: ${target.tagName}`);
     const _append = () => {
       target.appendChild(element);
     };
 
+    let tries = 0;
     if (target) {
+      tries++;
       _append();
     } else {
       const interval = setInterval(() => {
+        tries++;
         if (target) {
           _append();
           clearInterval(interval);
         }
       }, 0.1);
     }
+    console.debug(`Finished appending element to target: ${target.tagName}`);
   };
 
   const addPrecloak = () => {
@@ -197,16 +202,13 @@
   };
 
   const run = () => {
-    addPrecloak();
-    addOverlay();
     sweepAndCloak();
     setInterval(sweepAndCloak, cloakInterval);
     setTimeout(showCloakedPage, overlayInterval);
   };
 
-  if (document.body) {
-    return run();
-  }
+  addPrecloak();
+  addOverlay();
 
   document.addEventListener("DOMContentLoaded", run);
 })();
