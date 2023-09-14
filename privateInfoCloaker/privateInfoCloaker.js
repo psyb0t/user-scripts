@@ -197,7 +197,6 @@
   };
 
   const run = () => {
-    addStyle();
     addPrecloak();
     addOverlay();
     sweepAndCloak();
