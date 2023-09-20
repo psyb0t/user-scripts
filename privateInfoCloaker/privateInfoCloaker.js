@@ -16,7 +16,7 @@
   "use strict";
 
   const cloakInterval = 50;
-  const overlayInterval = 2500;
+  const overlayTimeout = 60000;
 
   const appendTo = (target, element) => {
     console.debug(`Appending element to target: ${target.tagName}`);
@@ -204,7 +204,7 @@
   const run = () => {
     sweepAndCloak();
     setInterval(sweepAndCloak, cloakInterval);
-    setTimeout(showCloakedPage, overlayInterval);
+    setTimeout(showCloakedPage, overlayTimeout);
   };
 
   addPrecloak();
