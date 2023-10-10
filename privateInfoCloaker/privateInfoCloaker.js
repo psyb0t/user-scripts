@@ -17,6 +17,7 @@
 
   const cloakInterval = 50;
   const overlayTimeout = 5000;
+  const cloakTextWith = "CLOAKED";
 
   const appendTo = (target, element, maxRetries = 10000) => {
     console.debug(`appendTo start target: ${target}`);
@@ -185,7 +186,7 @@
       ];
 
       patterns.forEach((pattern) => {
-        content = content.replace(pattern, "obfuscated");
+        content = content.replace(pattern, cloakTextWith);
       });
 
       if (node.data !== content) {
