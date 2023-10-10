@@ -5,7 +5,7 @@
 // @version     0.1
 // @license     WTFPL2
 // @description Hide private info on the page and morph text inputs to password type
-// @downloadURL TO_POPULATE_WITH_GITHUB_URL
+// @downloadURL https://raw.githubusercontent.com/psyb0t/user-scripts/master/privateInfoCloaker/privateInfoCloaker.js
 
 // @match       http://*/*
 // @match       https://*/*
