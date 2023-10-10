@@ -16,127 +16,140 @@
   "use strict";
 
   const cloakInterval = 50;
-  const overlayTimeout = 60000;
+  const overlayTimeout = 5000;
 
-  const appendTo = (target, element) => {
-    console.debug(`Appending element to target: ${target.tagName}`);
-    const _append = () => {
-      target.appendChild(element);
-    };
+  const appendTo = (target, element, maxRetries = 10000) => {
+    console.debug(`appendTo start target: ${target}`);
 
-    let tries = 0;
-    if (target) {
-      tries++;
-      _append();
-    } else {
-      const interval = setInterval(() => {
-        tries++;
-        if (target) {
-          _append();
-          clearInterval(interval);
+    let retryNum = 0;
+    let success = false;
+    while (!success) {
+      if (retryNum >= maxRetries) {
+        break;
+      }
+
+      try {
+        if (typeof element == "string") {
+          target.insertAdjacentHTML("afterbegin", element);
+        } else {
+          target.appendChild(element);
         }
-      }, 0.1);
+
+        success = true;
+      } catch (e) {
+        console.debug(`Could not appendChild: ${e}`);
+        retryNum++;
+      }
     }
-    console.debug(`Finished appending element to target: ${target.tagName}`);
+
+    console.debug(`appendTo end target: ${target}`);
   };
 
   const addPrecloak = () => {
-    let preCloakStyle = document.createElement("style");
-    preCloakStyle.type = "text/css";
-    preCloakStyle.setAttribute("data-identity", "pre-cloak");
-    preCloakStyle.innerHTML = `
-      * {
-          visibility: hidden !important;
-      }
+    console.debug(`addPrecloak start`);
+    const style = `
+        <style type="text/css" data-identity="pre-cloak">
+            * {
+                visibility: hidden !important;
+            }
 
-      #cloakOverlay, #cloakOverlay * {
-          visibility: visible !important;
-      }
-  `;
+            #cloakOverlay, #cloakOverlay * {
+                visibility: visible !important;
+            }
+        </style>
+    `;
 
-    appendTo(document.head, preCloakStyle);
+    appendTo(document.head, style);
+    console.debug(`addPrecloak end`);
   };
 
   const removePrecloak = () => {
-    let preCloak = document.querySelector('style[data-identity="pre-cloak"]');
-    if (preCloak) preCloak.remove();
+    console.debug(`removePrecloak start`);
+    let preCloak = document.querySelector('[data-identity="pre-cloak"]');
+    if (preCloak) {
+      preCloak.remove();
+    }
+    console.debug(`removePrecloak end`);
   };
 
-  const addOverlayStyle = () => {
-    let style = document.createElement("style");
-    style.type = "text/css";
-    style.innerHTML = `
-    @import url('https://fonts.googleapis.com/css?family=Fira+Code');
+  const addCloakOverlay = () => {
+    console.debug(`addCloakOverlay start`);
 
-    @keyframes blink {
-        50% { opacity: 0; }
-    }
+    const html = `
+        <style type="text/css" data-identity="cloak">
+            @import url('https://fonts.googleapis.com/css?family=Fira+Code');
 
-    @keyframes rotate {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
+            @keyframes blink {
+                50% { opacity: 0; }
+            }
 
-    #cloakOverlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: #000;
-        z-index: 999999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Fira Code', monospace !important;
-        color: #20C20E !important;
-        font-size: 24px;
-        overflow: hidden;
-    }
+            @keyframes rotate {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
 
-    #cloakOverlay::after {
-        content: '_';
-        animation: blink 1s infinite;
-    }
+            #cloakOverlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: #000;
+                z-index: 999999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: 'Fira Code', monospace !important;
+                color: #20C20E !important;
+                font-size: 24px;
+                overflow: hidden;
+            }
 
-    #circle {
-        border: 5px solid transparent;
-        border-top-color: #20C20E;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        animation: rotate 1s linear infinite;
-        margin-right: 15px;
-    }
-`;
+            #cloakOverlay::after {
+                content: '_';
+                animation: blink 1s infinite;
+            }
 
-    appendTo(document.head, style);
+            #circle {
+                border: 5px solid transparent;
+                border-top-color: #20C20E;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                animation: rotate 1s linear infinite;
+                margin-right: 15px;
+            }
+        </style>
+
+        <div id="cloakOverlay">
+            <div id="circle"></div>
+            CLOAKING IN PROGRESS...
+        </div>
+    `;
+
+    appendTo(document.body, html);
+    console.debug(`addCloakOverlay end`);
   };
 
-  const addOverlay = () => {
-    addOverlayStyle();
+  const removeCloakOverlay = () => {
+    console.debug(`removeCloakOverlay start`);
+    const overlayStyle = document.querySelector('[data-identity="cloak"]');
+    if (overlayStyle) {
+      overlayStyle.remove();
+    }
 
-    let overlay = document.createElement("div");
-    overlay.setAttribute("id", "cloakOverlay");
-
-    let circle = document.createElement("div");
-    circle.setAttribute("id", "circle");
-    overlay.appendChild(circle);
-
-    let textNode = document.createTextNode("CLOAKING IN PROGRESS...");
-    overlay.appendChild(textNode);
-
-    appendTo(document.body, overlay);
-  };
-
-  const removeOverlay = () => {
-    let overlay = document.getElementById("cloakOverlay");
-    if (overlay) overlay.remove();
+    const overlay = document.getElementById("cloakOverlay");
+    if (overlay) {
+      overlay.remove();
+    }
+    console.debug(`removeCloakOverlay end`);
   };
 
   const showCloakedPage = () => {
+    console.debug(`showCloakedPage start`);
     removePrecloak();
-    removeOverlay();
+    removeCloakOverlay();
+    console.debug(`showCloakedPage end`);
   };
 
   const cloakPrivateInfo = (node) => {
@@ -190,25 +203,60 @@
   };
 
   const morphAllTextInputs = () => {
+    // console.debug(`morphAllTextInputs start`);
     let inputs = document.querySelectorAll('input[type="text"]');
     for (let input of inputs) {
       input.type = "password";
     }
+    // console.debug(`morphAllTextInputs end`);
   };
 
   const sweepAndCloak = () => {
+    // console.debug(`sweepAndCloak start`);
     cloakPrivateInfo(document.body);
     morphAllTextInputs();
+    // console.debug(`sweepAndCloak end`);
   };
 
   const run = () => {
-    sweepAndCloak();
+    console.debug(`run start`);
     setInterval(sweepAndCloak, cloakInterval);
     setTimeout(showCloakedPage, overlayTimeout);
+    console.debug(`run end`);
   };
 
-  addPrecloak();
-  addOverlay();
-
   document.addEventListener("DOMContentLoaded", run);
+
+  const observeElements = () => {
+    let headFound = false;
+    let bodyFound = false;
+
+    const observer = new MutationObserver((mutationsList, observer) => {
+      for (let mutation of mutationsList) {
+        if (!headFound && mutation.target.nodeName === "HEAD") {
+          console.debug("Observer got head");
+          addPrecloak();
+          headFound = true;
+        }
+
+        if (!bodyFound && mutation.target.nodeName === "BODY") {
+          console.debug("Observer got body");
+          addCloakOverlay();
+          bodyFound = true;
+        }
+
+        if (headFound && bodyFound) {
+          observer.disconnect();
+          break;
+        }
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  };
+
+  observeElements();
 })();
