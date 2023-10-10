@@ -224,6 +224,7 @@
 
   const sweepAndCloak = () => {
     // console.debug(`sweepAndCloak start`);
+    cloakPrivateInfo(document.head);
     cloakPrivateInfo(document.body);
     morphAllTextInputs();
     // console.debug(`sweepAndCloak end`);
