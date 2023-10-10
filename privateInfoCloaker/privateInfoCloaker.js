@@ -18,6 +18,7 @@
   const cloakInterval = 50;
   const overlayTimeout = 5000;
   const cloakTextWith = "CLOAKED";
+  const cloakWordlist = [];
 
   const appendTo = (target, element, maxRetries = 10000) => {
     console.debug(`appendTo start target: ${target}`);
@@ -176,7 +177,7 @@
     if (node.nodeType === 3) {
       let content = node.data;
 
-      const patterns = [
+      let patterns = [
         emailRegex,
         phoneRegex,
         phonesWithExtsRegex,
@@ -184,6 +185,15 @@
         creditCardRegex,
         ipv6Regex,
       ];
+
+      if (cloakWordlist.length > 0) {
+        const cloakWordPattern = new RegExp(
+          `\\b(${cloakWordlist.join("|")})\\b`,
+          "gi"
+        );
+
+        patterns.push(cloakWordPattern);
+      }
 
       patterns.forEach((pattern) => {
         content = content.replace(pattern, cloakTextWith);
