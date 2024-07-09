@@ -1,11 +1,8 @@
 // ==UserScript==
-// @id          private-info-cloaker@psyb0t
 // @name        Private Info Cloaker
 // @author      https://github.com/psyb0t/
 // @version     0.1
-// @license     WTFPL2
 // @description Hide private info on the page and morph text inputs to password type
-// @downloadURL https://raw.githubusercontent.com/psyb0t/user-scripts/master/privateInfoCloaker/privateInfoCloaker.js
 
 // @match       http://*/*
 // @match       https://*/*

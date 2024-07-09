@@ -1,12 +1,10 @@
 // ==UserScript==
-// @id          huggingface-autofill-deletion-confirmation@psyb0t
 // @name        Huggingface Auto-fill Model Deletion Confirmation
 // @author      https://github.com/psyb0t/
 // @version     0.1
-// @license     WTFPL2
 // @description Automatically and persistently fills in the confirmation text for deleting models on Hugging Face
 // @downloadURL https://raw.githubusercontent.com/psyb0t/user-scripts/master/huggingfaceAutofillModelDeletionConfirmation/huggingfaceAutofillModelDeletionConfirmation.js
-
+// ==/UserScript==
 
 (function() {
     'use strict';
