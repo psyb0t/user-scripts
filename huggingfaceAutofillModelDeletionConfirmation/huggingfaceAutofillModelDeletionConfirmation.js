@@ -4,6 +4,8 @@
 // @version     0.1
 // @description Automatically and persistently fills in the confirmation text for deleting models on Hugging Face
 // @downloadURL https://raw.githubusercontent.com/psyb0t/user-scripts/master/huggingfaceAutofillModelDeletionConfirmation/huggingfaceAutofillModelDeletionConfirmation.js
+// @match       https://huggingface.co/*/settings
+// @run-at      document-start
 // ==/UserScript==
 
 (function() {
